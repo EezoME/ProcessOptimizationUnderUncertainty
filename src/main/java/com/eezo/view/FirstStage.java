@@ -2,6 +2,7 @@ package main.java.com.eezo.view;
 
 import main.java.com.eezo.AlternativeSolution1;
 import main.java.com.eezo.Matrix;
+import main.java.com.eezo.Messaging;
 import main.java.com.eezo.TransData;
 
 import javax.swing.*;
@@ -9,6 +10,7 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.*;
 
 /**
  *
@@ -30,6 +32,7 @@ public class FirstStage extends JFrame implements FormInferface {
 
     /** WORKS VARS */
     private AlternativeSolution1 rootAS;
+    private java.util.List<AlternativeSolution1> alternativeSolutions;
 
     public FirstStage(final JFrame parent){
         super("Первый этап");
@@ -56,7 +59,19 @@ public class FirstStage extends JFrame implements FormInferface {
                 buttonNext.setEnabled(true);
             }
         });
+        buttonNext.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                next();
+            }
+        });
         dataInitiation();
+        buttonChooseAS.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                choose();
+            }
+        });
     }
 
     /**
@@ -84,6 +99,54 @@ public class FirstStage extends JFrame implements FormInferface {
     private void calculateRootAS(){
         rootAS = new AlternativeSolution1(Matrix.northWestCorner());
         displayASOnTable(rootAS, 0);
+        alternativeSolutions = new ArrayList<>();
+    }
+
+    private void next(){
+        alternativeSolutions.add(rootAS.getNextSolution());
+        if (alternativeSolutions.get(alternativeSolutions.size()-1) == null){
+            Messaging.showMessageDialog("На данной итерации больше нет новых альтернативных решений.\n" +
+                    "Выберите альтернативу из представленных в списке.");
+            buttonNext.setEnabled(false);
+            buttonChooseAS.setEnabled(true);
+        } else {
+            addItemToSigmaList(alternativeSolutions.get(alternativeSolutions.size()-1).calculateSigma());
+            displayASOnTable(alternativeSolutions.get(alternativeSolutions.size()-1),
+                    alternativeSolutions.size());
+            //
+        }
+    }
+
+    private void choose(){
+        if (checkBoxAutoChoose.isSelected()){
+            int minSigma = Integer.MAX_VALUE;
+            int index = -1;
+            for (int i = 0; i < alternativeSolutions.size(); i++) {
+                if (minSigma > alternativeSolutions.get(i).getSigma()){
+                    minSigma = alternativeSolutions.get(i).getSigma();
+                    index = i;
+                }
+            }
+            if (minSigma < 0){
+                rootAS = alternativeSolutions.get(index);
+                Messaging.showMessageDialog("Выбрано альтернативное решение #"+(index+1));
+            } else {
+                Messaging.showMessageDialog("Не найдено лучших альтернатив, чем первое.\n" +
+                        "Этап завершён, лучшая альтернатива - "+(index+1));
+            }
+        } else {
+            if (listSigma.getSelectedIndex() == -1){
+                Messaging.showMessageDialog("Выберите альтернативу.","err");
+                return;
+            }
+            rootAS = alternativeSolutions.get(listSigma.getSelectedIndex());
+        }
+        alternativeSolutions = new ArrayList<>();
+        listSigma.setListData(new Object[0]);
+        rootAS.getMatrix().recalculateValues();
+        displayASOnTable(rootAS, 0);
+        buttonChooseAS.setEnabled(false);
+        buttonNext.setEnabled(true);
     }
 
     public static void main(final JFrame parent) {
@@ -101,10 +164,25 @@ public class FirstStage extends JFrame implements FormInferface {
         model.setColumnCount(TransData.staticInstance.getMatrixColsNumber());
         for (int i = 0; i < tableCurrentAS.getRowCount(); i++) {
             for (int j = 0; j < tableCurrentAS.getColumnCount(); j++) {
-                tableCurrentAS.setValueAt(as.getMatrix().getCellByCoords(i,j).getValue(), i, j);
+                tableCurrentAS.setValueAt(as.getMatrix().getCellByCoords(i,j).getValue()+" "
+                        +(as.getMatrix().getCellByCoords(i,j).getStatus() == 0 ? "" :
+                        (as.getMatrix().getCellByCoords(i,j).getStatus() == 1) ? "/ +" : "/ -"), i, j);
             }
         }
-        labelASOrder.setText(String.valueOf(order));
+        updateASLabel(order);
+    }
+
+    private void updateASLabel(int number){
+        labelASOrder.setText("Alternative solution #"+number);
+    }
+
+    private void addItemToSigmaList(int sigma){
+        DefaultListModel listModel = new DefaultListModel();
+        for (int i = 0; i < listSigma.getModel().getSize(); i++) {
+            listModel.addElement(listSigma.getModel().getElementAt(i));
+        }
+        listModel.addElement("sigma"+(listModel.getSize()+1)+" = "+sigma);
+        listSigma.setModel(listModel);
     }
 
     @Override

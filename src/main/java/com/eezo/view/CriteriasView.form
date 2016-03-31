@@ -1,31 +1,230 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="main.java.com.eezo.view.CriteriasView">
-  <grid id="27dc6" binding="rootPanel" layout-manager="GridLayoutManager" row-count="2" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+  <grid id="27dc6" binding="rootPanel" layout-manager="GridLayoutManager" row-count="3" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
     <margin top="0" left="0" bottom="0" right="0"/>
     <constraints>
-      <xy x="20" y="20" width="563" height="221"/>
+      <xy x="20" y="20" width="761" height="253"/>
     </constraints>
     <properties/>
     <border type="none"/>
     <children>
-      <component id="6e8b5" class="javax.swing.JTable" binding="table1" default-binding="true">
-        <constraints>
-          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false">
-            <minimum-size width="500" height="150"/>
-            <preferred-size width="150" height="50"/>
-          </grid>
-        </constraints>
-        <properties/>
-      </component>
       <component id="7f268" class="javax.swing.JButton" binding="buttonChooseAS">
         <constraints>
-          <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
+          <grid row="2" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
           <horizontalAlignment value="0"/>
           <text value="Выбор"/>
         </properties>
       </component>
+      <grid id="b9ac" layout-manager="GridLayoutManager" row-count="1" column-count="8" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+        <margin top="0" left="0" bottom="0" right="0"/>
+        <constraints>
+          <grid row="0" column="0" row-span="1" col-span="3" vsize-policy="3" hsize-policy="3" anchor="8" fill="2" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties/>
+        <border type="none"/>
+        <children>
+          <component id="256c2" class="javax.swing.JLabel">
+            <constraints>
+              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <text value="Выберите критерий: "/>
+            </properties>
+          </component>
+          <component id="9251" class="javax.swing.JRadioButton" binding="radioButtonMM">
+            <constraints>
+              <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <text value="MM"/>
+              <toolTipText value="Критерий минимаксный"/>
+            </properties>
+          </component>
+          <component id="a2a00" class="javax.swing.JRadioButton" binding="radioButtonBL">
+            <constraints>
+              <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <text value="BL"/>
+              <toolTipText value="Критерий Байеса-Лапласса"/>
+            </properties>
+          </component>
+          <component id="f6f8b" class="javax.swing.JRadioButton" binding="radioButtonS">
+            <constraints>
+              <grid row="0" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <text value="S"/>
+              <toolTipText value="Критерий Севиджа"/>
+            </properties>
+          </component>
+          <component id="37268" class="javax.swing.JRadioButton" binding="radioButtonHW">
+            <constraints>
+              <grid row="0" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <text value="HW"/>
+              <toolTipText value="Критерий Гурвица"/>
+            </properties>
+          </component>
+          <component id="43461" class="javax.swing.JRadioButton" binding="radioButtonHL">
+            <constraints>
+              <grid row="0" column="5" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <text value="HL"/>
+              <toolTipText value="Критерий Ходжа-Лемана"/>
+            </properties>
+          </component>
+          <component id="d4fa0" class="javax.swing.JRadioButton" binding="radioButtonG">
+            <constraints>
+              <grid row="0" column="6" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <text value="G"/>
+              <toolTipText value="Критерий Гермейера"/>
+            </properties>
+          </component>
+          <component id="feef9" class="javax.swing.JRadioButton" binding="radioButtonP">
+            <constraints>
+              <grid row="0" column="7" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <text value="P"/>
+              <toolTipText value="Критерий произведений"/>
+            </properties>
+          </component>
+        </children>
+      </grid>
+      <grid id="2123f" layout-manager="GridLayoutManager" row-count="2" column-count="6" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+        <margin top="0" left="0" bottom="0" right="0"/>
+        <constraints>
+          <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="8" fill="2" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties/>
+        <border type="none"/>
+        <children>
+          <component id="d95f4" class="javax.swing.JLabel" binding="labelQ1">
+            <constraints>
+              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <text value="q1 = "/>
+            </properties>
+          </component>
+          <component id="ebbd" class="javax.swing.JTextField" binding="textFieldQ1">
+            <constraints>
+              <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                <preferred-size width="150" height="-1"/>
+                <maximum-size width="30" height="-1"/>
+              </grid>
+            </constraints>
+            <properties>
+              <text value="0.4"/>
+            </properties>
+          </component>
+          <component id="1168c" class="javax.swing.JLabel" binding="labelQ2">
+            <constraints>
+              <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <text value="q2 = "/>
+            </properties>
+          </component>
+          <component id="e79b9" class="javax.swing.JTextField" binding="textFieldQ2">
+            <constraints>
+              <grid row="0" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                <preferred-size width="150" height="-1"/>
+                <maximum-size width="30" height="-1"/>
+              </grid>
+            </constraints>
+            <properties>
+              <text value="0.3"/>
+            </properties>
+          </component>
+          <component id="a0112" class="javax.swing.JLabel" binding="labelQ3">
+            <constraints>
+              <grid row="0" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <text value="q3 = "/>
+            </properties>
+          </component>
+          <component id="88859" class="javax.swing.JTextField" binding="textFieldQ3">
+            <constraints>
+              <grid row="0" column="5" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                <preferred-size width="150" height="-1"/>
+                <maximum-size width="30" height="-1"/>
+              </grid>
+            </constraints>
+            <properties>
+              <text value="0.3"/>
+            </properties>
+          </component>
+          <component id="b80a6" class="javax.swing.JLabel" binding="labelC">
+            <constraints>
+              <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <text value="c = "/>
+            </properties>
+          </component>
+          <component id="89be" class="javax.swing.JTextField" binding="textFieldC">
+            <constraints>
+              <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                <preferred-size width="150" height="-1"/>
+                <maximum-size width="30" height="-1"/>
+              </grid>
+            </constraints>
+            <properties>
+              <text value="0.4"/>
+            </properties>
+          </component>
+          <component id="836e7" class="javax.swing.JLabel" binding="labelV">
+            <constraints>
+              <grid row="1" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <text value="v = "/>
+            </properties>
+          </component>
+          <component id="e94b1" class="javax.swing.JTextField" binding="textFieldV">
+            <constraints>
+              <grid row="1" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                <preferred-size width="150" height="-1"/>
+                <maximum-size width="30" height="-1"/>
+              </grid>
+            </constraints>
+            <properties>
+              <text value="0.5"/>
+            </properties>
+          </component>
+        </children>
+      </grid>
+      <component id="b9f9c" class="javax.swing.JButton" binding="buttonCalculate">
+        <constraints>
+          <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <horizontalAlignment value="0"/>
+          <text value="Расчитать"/>
+        </properties>
+      </component>
+      <scrollpane id="f57a3">
+        <constraints>
+          <grid row="1" column="0" row-span="1" col-span="3" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties/>
+        <border type="none"/>
+        <children>
+          <component id="6e8b5" class="javax.swing.JTable" binding="table1" default-binding="true">
+            <constraints/>
+            <properties/>
+          </component>
+        </children>
+      </scrollpane>
     </children>
   </grid>
 </form>

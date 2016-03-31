@@ -41,6 +41,16 @@ public class AlternativeSolution1 {
         return sigma;
     }
 
+    public int calculateZ(){
+        Z = 0;
+        for (int i = 0; i < TransData.staticInstance.getMatrixRowsNumber(); i++) {
+            for (int j = 0; j < TransData.staticInstance.getMatrixColsNumber(); j++) {
+                Z += TransData.staticInstance.getMatrixOfCosts()[i][j]*matrix.getCellByCoords(i,j).getValue();
+            }
+        }
+        return Z;
+    }
+
     public int getSigma() {
         return sigma;
     }

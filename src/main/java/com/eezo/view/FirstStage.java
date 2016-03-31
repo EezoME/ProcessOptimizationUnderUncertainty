@@ -99,6 +99,7 @@ public class FirstStage extends JFrame implements FormInferface {
     private void calculateRootAS(){
         rootAS = new AlternativeSolution1(Matrix.northWestCorner());
         displayASOnTable(rootAS, 0);
+        updateZLabel(rootAS.calculateZ());
         alternativeSolutions = new ArrayList<>();
     }
 
@@ -109,6 +110,7 @@ public class FirstStage extends JFrame implements FormInferface {
                     "Выберите альтернативу из представленных в списке.");
             buttonNext.setEnabled(false);
             buttonChooseAS.setEnabled(true);
+            alternativeSolutions.remove(alternativeSolutions.size()-1);
         } else {
             addItemToSigmaList(alternativeSolutions.get(alternativeSolutions.size()-1).calculateSigma());
             displayASOnTable(alternativeSolutions.get(alternativeSolutions.size()-1),
@@ -118,33 +120,45 @@ public class FirstStage extends JFrame implements FormInferface {
     }
 
     private void choose(){
+        int minSigma = Integer.MAX_VALUE;
+        int index = -1;
+        for (int i = 0; i < alternativeSolutions.size(); i++) {
+            if (minSigma > alternativeSolutions.get(i).getSigma()){
+                minSigma = alternativeSolutions.get(i).getSigma();
+                index = i;
+            }
+        }
+        if (minSigma > 0){
+            Messaging.showMessageDialog("Не найдено лучших альтернатив, чем первое.\n" +
+                    "Этап завершён, лучшая альтернатива - #0\n"+" (Z="+rootAS.calculateZ()+")");
+            return;
+        }
         if (checkBoxAutoChoose.isSelected()){
-            int minSigma = Integer.MAX_VALUE;
-            int index = -1;
-            for (int i = 0; i < alternativeSolutions.size(); i++) {
-                if (minSigma > alternativeSolutions.get(i).getSigma()){
-                    minSigma = alternativeSolutions.get(i).getSigma();
-                    index = i;
-                }
-            }
-            if (minSigma < 0){
-                rootAS = alternativeSolutions.get(index);
-                Messaging.showMessageDialog("Выбрано альтернативное решение #"+(index+1));
-            } else {
-                Messaging.showMessageDialog("Не найдено лучших альтернатив, чем первое.\n" +
-                        "Этап завершён, лучшая альтернатива - "+(index+1));
-            }
+            rootAS = alternativeSolutions.get(index);
+            Messaging.showMessageDialog("Выбрано альтернативное решение #"+(index+1)+" (Z="+rootAS.calculateZ()+")");
         } else {
             if (listSigma.getSelectedIndex() == -1){
                 Messaging.showMessageDialog("Выберите альтернативу.","err");
                 return;
             }
+            for (int i = 0; i < TransData.staticInstance.getMatrixRowsNumber(); i++) {
+                for (int j = 0; j < TransData.staticInstance.getMatrixColsNumber(); j++) {
+                    System.out.println(alternativeSolutions.get(listSigma.getSelectedIndex()).getMatrix().getCellByCoords(i, j)+" ");
+                }
+            }
             rootAS = alternativeSolutions.get(listSigma.getSelectedIndex());
+            System.out.println();
+            for (int i = 0; i < TransData.staticInstance.getMatrixRowsNumber(); i++) {
+                for (int j = 0; j < TransData.staticInstance.getMatrixColsNumber(); j++) {
+                    System.out.println(rootAS.getMatrix().getCellByCoords(i, j)+" ");
+                }
+            }
         }
-        alternativeSolutions = new ArrayList<>();
-        listSigma.setListData(new Object[0]);
         rootAS.getMatrix().recalculateValues();
         displayASOnTable(rootAS, 0);
+        updateZLabel(rootAS.calculateZ());
+        alternativeSolutions = new ArrayList<>();
+        listSigma.setListData(new Object[0]);
         buttonChooseAS.setEnabled(false);
         buttonNext.setEnabled(true);
     }
@@ -174,6 +188,10 @@ public class FirstStage extends JFrame implements FormInferface {
 
     private void updateASLabel(int number){
         labelASOrder.setText("Alternative solution #"+number);
+    }
+
+    private void updateZLabel(int number){
+        labelZ.setText(" Z = "+number);
     }
 
     private void addItemToSigmaList(int sigma){

@@ -12,6 +12,12 @@ public class TriangularNumber {
     private int a0;
     private int a2;
 
+    public TriangularNumber(){
+        this.a1 = 0;
+        this.a0 = 0;
+        this.a2 = 0;
+    }
+
     public TriangularNumber(int a1, int a0, int a2) {
         this.a1 = a1;
         this.a0 = a0;
@@ -30,6 +36,17 @@ public class TriangularNumber {
             a0 = 0;
             a2 = 0;
         }
+    }
+
+    /**
+     * Adds two triangular numbers. The second number multiplied by the number.
+     * @param number second number
+     * @param value value
+     */
+    public void additionOfTN(TriangularNumber number, int value){
+        this.a1 += number.a1*value;
+        this.a0 += number.a0*value;
+        this.a2 += number.a2*value;
     }
 
     /** OPERATIONS */
@@ -54,8 +71,16 @@ public class TriangularNumber {
         return !(a1 > a0 || a0 > a2);
     }
 
+    public int[] toArray(){
+        return new int[]{a1, a0, a2};
+    }
+
     public String toParseFormat(){
         return a1+" "+a0+" "+a2;
+    }
+
+    public String toLineFormat(){
+        return "[ "+a1+";"+a0+";"+a2+"]";
     }
 
     @Override
@@ -65,5 +90,9 @@ public class TriangularNumber {
                 ", a0=" + a0 +
                 ", a2=" + a2 +
                 '}';
+    }
+
+    public float calculateEpsilon(){
+        return (a1+2*a0+a2)/2;
     }
 }

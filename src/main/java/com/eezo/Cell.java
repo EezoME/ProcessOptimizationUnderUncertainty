@@ -4,7 +4,7 @@ package main.java.com.eezo;
  *
  * Created by Eezo on 22.03.2016.
  */
-public class Cell {
+public class Cell implements Cloneable {
     private final int row; // or X
     private final int column; // or Y
     private int value;
@@ -75,5 +75,14 @@ public class Cell {
     @Override
     public String toString() {
         return "row="+row+" col="+column+" value="+value+" status="+status;
+    }
+
+    @Override
+    protected Cell clone() {
+        try {
+            return (Cell) super.clone();
+        } catch (CloneNotSupportedException e) {
+            return null;
+        }
     }
 }

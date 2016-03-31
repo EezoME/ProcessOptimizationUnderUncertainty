@@ -48,6 +48,12 @@ public class Welcome extends JFrame implements FormInferface {
                 goToForms(1);
             }
         });
+        buttonGoToSS.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                goToForms(2);
+            }
+        });
     }
 
     private void goToForms(int formIndex){
@@ -55,7 +61,7 @@ public class Welcome extends JFrame implements FormInferface {
         if (formIndex == 1) {
             FirstStage.main(this);
         } else {
-            //SecondStage.main(this);
+            SecondStage.main(this);
         }
     }
 

@@ -111,19 +111,19 @@ public class CriteriasView extends JFrame implements FormInferface {
                     return;
                 }
                 if (buttonGroup.getSelection() == radioButtonMM.getModel()) {
-                    minimax();
+                    minimaxCriteria();
                 } else if (buttonGroup.getSelection() == radioButtonBL.getModel()) {
-                    bl();
+                    bayesLaplaceCriteria();
                 } else if (buttonGroup.getSelection() == radioButtonS.getModel()) {
-                    s();
+                    savageCriteria();
                 } else if (buttonGroup.getSelection() == radioButtonHW.getModel()) {
-                    hw();
+                    hurwitzCriteria();
                 } else if (buttonGroup.getSelection() == radioButtonHL.getModel()) {
-                    hl();
+                    hodgeLehmannCriteria();
                 } else if (buttonGroup.getSelection() == radioButtonG.getModel()) {
-                    g();
+                    germeierCriteria();
                 } else {
-                    p();
+                    productCriteria();
                 }
                 buttonChooseAS.setEnabled(true);
             }
@@ -142,6 +142,7 @@ public class CriteriasView extends JFrame implements FormInferface {
         model = (DefaultTableModel) table1.getModel();
         model.setRowCount(F.length);
         model.setColumnCount(3);
+        model.setColumnIdentifiers(new Object[]{"F1", "F2", "F3"});
         for (int i = 0; i < F.length; i++) {
             alternativeSolutions.get(i).getZ().unaryMinus();
             F[i] = alternativeSolutions.get(i).getZ().toArray();
@@ -151,12 +152,17 @@ public class CriteriasView extends JFrame implements FormInferface {
         }
     }
 
-    private void choose(){
-        if (table1.getSelectedRow() == -1){
-            Messaging.showMessageDialog("Выберите строку-альтернативу!","err");
+    private void choose() {
+        if (table1.getSelectedRow() == -1) {
+            Messaging.showMessageDialog("Выберите строку-альтернативу!", "err");
             return;
         }
         SecondStage.rootAS = alternativeSolutions.get(table1.getSelectedRow());
+        if (table1.getSelectedRow() == 0) {
+            Messaging.showMessageDialog("Второй этап завершён - победила первая альтернатива: " + SecondStage.rootAS.getZ().toLineFormat());
+            // TODO: total for all
+            return;
+        }
         SecondStage.rootAS.getMatrix().recalculateValues();
         dispose();
     }
@@ -165,7 +171,7 @@ public class CriteriasView extends JFrame implements FormInferface {
      * CRITERIAS
      */
 
-    private void minimax() {
+    private void minimaxCriteria() {
         int[] mins = new int[F.length];
         for (int i = 0; i < mins.length; i++) {
             mins[i] = getMin(F[i]);
@@ -173,6 +179,9 @@ public class CriteriasView extends JFrame implements FormInferface {
 
         int max = getMax(mins);
         model.setColumnCount(5);
+        clearTableInterval(3, 4);
+        model.setColumnIdentifiers(new Object[]{"F1", "F2", "F3", "<html>e<sub>ir</sub>",
+                "<html>max(e<sub>ir</sub>)</html>"});
         for (int i = 0; i < table1.getRowCount(); i++) {
             table1.setValueAt(mins[i], i, 3);
             if (max == mins[i]) {
@@ -181,12 +190,13 @@ public class CriteriasView extends JFrame implements FormInferface {
         }
     }
 
-    private void bl() {
+    private void bayesLaplaceCriteria() {
         float[] possibilities = getPossibilities();
         if (possibilities == null) {
             return;
         }
         float[] e = new float[F.length];
+        Arrays.fill(e, 0.0f);
         for (int i = 0; i < e.length; i++) {
             for (int j = 0; j < F[i].length; j++) {
                 e[i] += F[i][j] * possibilities[j];
@@ -195,6 +205,9 @@ public class CriteriasView extends JFrame implements FormInferface {
 
         float max = getMax(e);
         model.setColumnCount(5);
+        clearTableInterval(3, 4);
+        model.setColumnIdentifiers(new Object[]{"F1", "F2", "F3", "<html>e<sub>ir</sub>",
+                "<html>max(e<sub>ir</sub>)</html>"});
         for (int i = 0; i < table1.getRowCount(); i++) {
             table1.setValueAt(e[i], i, 3);
             if (max == e[i]) {
@@ -203,7 +216,7 @@ public class CriteriasView extends JFrame implements FormInferface {
         }
     }
 
-    private void s() {
+    private void savageCriteria() {
         int[] colMax = new int[3];
         Arrays.fill(colMax, Integer.MIN_VALUE);
         for (int i = 0; i < F.length; i++) {
@@ -217,8 +230,7 @@ public class CriteriasView extends JFrame implements FormInferface {
                 colMax[2] = F[i][2];
             }
         }
-        System.out.println("colMax = " + colMax[0] + " ; " + colMax[1] + " ; " + colMax[2]);
-        int[][] A = F;
+        int[][] A = new int[F.length][F[0].length];
         for (int i = 0; i < A.length; i++) {
             A[i][0] = colMax[0] - F[i][0];
             A[i][1] = colMax[1] - F[i][1];
@@ -229,8 +241,11 @@ public class CriteriasView extends JFrame implements FormInferface {
             maxes[i] = getMax(A[i]);
         }
 
-        int min = getMax(maxes);
+        int min = getMin(maxes);
         model.setColumnCount(8);
+        clearTableInterval(3, 7);
+        model.setColumnIdentifiers(new Object[]{"F1", "F2", "F3", "F1'", "F2'", "F3'",
+                "<html>max(a<sub>ij</sub>)", "<html>min(e<sub>ir</sub>)</html>"});
         for (int i = 0; i < table1.getRowCount(); i++) {
             table1.setValueAt(A[i][0], i, 3);
             table1.setValueAt(A[i][1], i, 4);
@@ -242,7 +257,7 @@ public class CriteriasView extends JFrame implements FormInferface {
         }
     }
 
-    private void hw() {
+    private void hurwitzCriteria() {
         float c = getC();
         if (c == -1) {
             return;
@@ -254,6 +269,10 @@ public class CriteriasView extends JFrame implements FormInferface {
 
         float max = getMax(e);
         model.setColumnCount(5);
+        clearTableInterval(3, 4);
+        model.setColumnIdentifiers(new Object[]{"F1", "F2", "F3",
+                "<html>c*min(e<sub>ij</sub>)+(1-c)*max(e<sub>ij</sub>)",
+                "<html>min(e<sub>ir</sub>)</html>"});
         for (int i = 0; i < table1.getRowCount(); i++) {
             table1.setValueAt(e[i], i, 3);
             if (max == e[i]) {
@@ -262,7 +281,7 @@ public class CriteriasView extends JFrame implements FormInferface {
         }
     }
 
-    private void hl() {
+    private void hodgeLehmannCriteria() {
         float v = getV();
         if (v == -1) {
             return;
@@ -273,6 +292,7 @@ public class CriteriasView extends JFrame implements FormInferface {
         }
         float[] possibilities = getPossibilities();
         float[] e = new float[F.length];
+        Arrays.fill(e, 0.0f);
         for (int i = 0; i < e.length; i++) {
             for (int j = 0; j < possibilities.length; j++) {
                 e[i] += F[i][j] * possibilities[j];
@@ -283,6 +303,9 @@ public class CriteriasView extends JFrame implements FormInferface {
 
         float max = getMax(e);
         model.setColumnCount(6);
+        clearTableInterval(3, 5);
+        model.setColumnIdentifiers(new Object[]{"F1", "F2", "F3", "<html>min(e<sub>ij</sub>)",
+                "<html>e<sub>ir</sub>", "<html>min(e<sub>ir</sub>)</html>"});
         for (int i = 0; i < table1.getRowCount(); i++) {
             table1.setValueAt(mins[i], i, 3);
             table1.setValueAt(e[i], i, 4);
@@ -292,7 +315,7 @@ public class CriteriasView extends JFrame implements FormInferface {
         }
     }
 
-    private void g() {
+    private void germeierCriteria() {
         float[] possibilities = getPossibilities();
         if (possibilities == null) {
             return;
@@ -303,7 +326,7 @@ public class CriteriasView extends JFrame implements FormInferface {
                 a = getMax(F[i]);
             }
         }
-        int[][] F2 = F;
+        int[][] F2 = new int[F.length][F[0].length];
         for (int i = 0; i < F2.length; i++) {
             for (int j = 0; j < F2[i].length; j++) {
                 F2[i][j] = a - F[i][j];
@@ -322,6 +345,10 @@ public class CriteriasView extends JFrame implements FormInferface {
 
         float min = getMin(e);
         model.setColumnCount(11);
+        clearTableInterval(3, 10);
+        model.setColumnIdentifiers(new Object[]{"F1", "F2", "F3", "F1'", "F2'", "F3'", "F1'*q1", "F2'*q2", "F3'*q3",
+                "<html>min(e<sub>ij</sub>)",
+                "<html>max(e<sub>ir</sub>)</html>"});
         for (int i = 0; i < table1.getRowCount(); i++) {
             table1.setValueAt(F2[i][0], i, 3);
             table1.setValueAt(F2[i][1], i, 4);
@@ -336,21 +363,36 @@ public class CriteriasView extends JFrame implements FormInferface {
         }
     }
 
-    private void p(){
-        long[] mult = new long[F.length];
-        Arrays.fill(mult, 1L);
+    private void productCriteria() {
+        int min = Integer.MAX_VALUE;
         for (int i = 0; i < F.length; i++) {
-            for (int j = 0; j < F[i].length; j++) {
-                mult[i] *= (long)F[i][j];
+            if (min > getMin(F[i])){
+                min = getMin(F[i]);
+            }
+        }
+        int[][] F1 = new int[F.length][F[0].length];
+        for (int i = 0; i < F1.length; i++) {
+            for (int j = 0; j < F1[i].length; j++) {
+                F1[i][j] = F[i][j] - min;
+            }
+        }
+        long[] product = new long[F.length];
+        Arrays.fill(product, 1L);
+        for (int i = 0; i < F1.length; i++) {
+            for (int j = 0; j < F1[i].length; j++) {
+                product[i] *= (long) F1[i][j];
             }
         }
 
-        long max = getMax(mult);
+        long max = getMax(product);
         model.setColumnCount(5);
+        clearTableInterval(3, 4);
+        model.setColumnIdentifiers(new Object[]{"F1", "F2", "F3", "<html>П(e<sub>ij</sub>)",
+                "<html>max(e<sub>ir</sub>)</html>"});
         for (int i = 0; i < table1.getRowCount(); i++) {
-            table1.setValueAt(mult[i], i, 3);
-            if (max == mult[i]) {
-                table1.setValueAt(mult[i], i, 4);
+            table1.setValueAt(product[i], i, 3);
+            if (max == product[i]) {
+                table1.setValueAt(product[i], i, 4);
             }
         }
     }
@@ -450,10 +492,18 @@ public class CriteriasView extends JFrame implements FormInferface {
             return -1;
         }
         if (v < 0 || v > 1) {
-            Messaging.showMessageDialog("с должно быть в пределах от 0 до 1", "err");
+            Messaging.showMessageDialog("v должно быть в пределах от 0 до 1", "err");
             return -1;
         }
         return v;
+    }
+
+    private void clearTableInterval(int colStart, int colEnd) {
+        for (int i = 0; i < table1.getRowCount(); i++) {
+            for (int j = colStart; j <= colEnd; j++) {
+                table1.setValueAt("", i, j);
+            }
+        }
     }
 
     private void hideOps() {

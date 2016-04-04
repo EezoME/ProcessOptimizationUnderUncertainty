@@ -34,6 +34,7 @@ public class CriteriasView extends JFrame implements FormInferface {
     private JLabel labelV;
     private JTextField textFieldV;
     private JTextField textFieldC;
+    private JRadioButton radioButtonAll;
     private ButtonGroup buttonGroup;
     public static java.util.List<AlternativeSolution2> alternativeSolutions;
     private int[][] F;
@@ -55,6 +56,7 @@ public class CriteriasView extends JFrame implements FormInferface {
         buttonGroup.add(radioButtonHL);
         buttonGroup.add(radioButtonP);
         buttonGroup.add(radioButtonG);
+        buttonGroup.add(radioButtonAll);
         hideOps();
         radioButtonMM.addMouseListener(new MouseAdapter() {
             @Override
@@ -103,6 +105,14 @@ public class CriteriasView extends JFrame implements FormInferface {
                 hideOps();
             }
         });
+        radioButtonAll.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                changeVisibleStatusForPossibilities(true);
+                changeVisibleStatusForV(true);
+                changeVisibleStatusForC(true);
+            }
+        });
         buttonCalculate.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -122,8 +132,10 @@ public class CriteriasView extends JFrame implements FormInferface {
                     hodgeLehmannCriteria();
                 } else if (buttonGroup.getSelection() == radioButtonG.getModel()) {
                     germeierCriteria();
-                } else {
+                } else if (buttonGroup.getSelection() == radioButtonP.getModel()) {
                     productCriteria();
+                } else {
+                    allCriterias();
                 }
                 buttonChooseAS.setEnabled(true);
             }
@@ -171,7 +183,9 @@ public class CriteriasView extends JFrame implements FormInferface {
      * CRITERIAS
      */
 
-    private void minimaxCriteria() {
+    private boolean[] minimaxCriteria() {
+        boolean[] markers = new boolean[F.length];
+        Arrays.fill(markers, false);
         int[] mins = new int[F.length];
         for (int i = 0; i < mins.length; i++) {
             mins[i] = getMin(F[i]);
@@ -183,17 +197,24 @@ public class CriteriasView extends JFrame implements FormInferface {
         model.setColumnIdentifiers(new Object[]{"F1", "F2", "F3", "<html>e<sub>ir</sub>",
                 "<html>max(e<sub>ir</sub>)</html>"});
         for (int i = 0; i < table1.getRowCount(); i++) {
+            table1.setValueAt(F[i][0], i, 0);
+            table1.setValueAt(F[i][1], i, 1);
+            table1.setValueAt(F[i][2], i, 2);
             table1.setValueAt(mins[i], i, 3);
             if (max == mins[i]) {
+                markers[i] = true;
                 table1.setValueAt(mins[i], i, 4);
             }
         }
+        return markers;
     }
 
-    private void bayesLaplaceCriteria() {
+    private boolean[] bayesLaplaceCriteria() {
+        boolean[] markers = new boolean[F.length];
+        Arrays.fill(markers, false);
         float[] possibilities = getPossibilities();
         if (possibilities == null) {
-            return;
+            return null;
         }
         float[] e = new float[F.length];
         Arrays.fill(e, 0.0f);
@@ -209,14 +230,21 @@ public class CriteriasView extends JFrame implements FormInferface {
         model.setColumnIdentifiers(new Object[]{"F1", "F2", "F3", "<html>e<sub>ir</sub>",
                 "<html>max(e<sub>ir</sub>)</html>"});
         for (int i = 0; i < table1.getRowCount(); i++) {
+            table1.setValueAt(F[i][0], i, 0);
+            table1.setValueAt(F[i][1], i, 1);
+            table1.setValueAt(F[i][2], i, 2);
             table1.setValueAt(e[i], i, 3);
-            if (max == e[i]) {
+            if (Float.compare(max, e[i]) == 0) {
+                markers[i] = true;
                 table1.setValueAt(e[i], i, 4);
             }
         }
+        return markers;
     }
 
-    private void savageCriteria() {
+    private boolean[] savageCriteria() {
+        boolean[] markers = new boolean[F.length];
+        Arrays.fill(markers, false);
         int[] colMax = new int[3];
         Arrays.fill(colMax, Integer.MIN_VALUE);
         for (int i = 0; i < F.length; i++) {
@@ -247,20 +275,27 @@ public class CriteriasView extends JFrame implements FormInferface {
         model.setColumnIdentifiers(new Object[]{"F1", "F2", "F3", "F1'", "F2'", "F3'",
                 "<html>max(a<sub>ij</sub>)", "<html>min(e<sub>ir</sub>)</html>"});
         for (int i = 0; i < table1.getRowCount(); i++) {
+            table1.setValueAt(F[i][0], i, 0);
+            table1.setValueAt(F[i][1], i, 1);
+            table1.setValueAt(F[i][2], i, 2);
             table1.setValueAt(A[i][0], i, 3);
             table1.setValueAt(A[i][1], i, 4);
             table1.setValueAt(A[i][2], i, 5);
             table1.setValueAt(maxes[i], i, 6);
             if (min == maxes[i]) {
+                markers[i] = true;
                 table1.setValueAt(maxes[i], i, 7);
             }
         }
+        return markers;
     }
 
-    private void hurwitzCriteria() {
+    private boolean[] hurwitzCriteria() {
+        boolean[] markers = new boolean[F.length];
+        Arrays.fill(markers, false);
         float c = getC();
         if (c == -1) {
-            return;
+            return null;
         }
         float[] e = new float[F.length];
         for (int i = 0; i < e.length; i++) {
@@ -274,17 +309,24 @@ public class CriteriasView extends JFrame implements FormInferface {
                 "<html>c*min(e<sub>ij</sub>)+(1-c)*max(e<sub>ij</sub>)",
                 "<html>min(e<sub>ir</sub>)</html>"});
         for (int i = 0; i < table1.getRowCount(); i++) {
+            table1.setValueAt(F[i][0], i, 0);
+            table1.setValueAt(F[i][1], i, 1);
+            table1.setValueAt(F[i][2], i, 2);
             table1.setValueAt(e[i], i, 3);
-            if (max == e[i]) {
+            if (Float.compare(max, e[i]) == 0) {
+                markers[i] = true;
                 table1.setValueAt(e[i], i, 4);
             }
         }
+        return markers;
     }
 
-    private void hodgeLehmannCriteria() {
+    private boolean[] hodgeLehmannCriteria() {
+        boolean[] markers = new boolean[F.length];
+        Arrays.fill(markers, false);
         float v = getV();
         if (v == -1) {
-            return;
+            return null;
         }
         int[] mins = new int[F.length];
         for (int i = 0; i < mins.length; i++) {
@@ -307,18 +349,25 @@ public class CriteriasView extends JFrame implements FormInferface {
         model.setColumnIdentifiers(new Object[]{"F1", "F2", "F3", "<html>min(e<sub>ij</sub>)",
                 "<html>e<sub>ir</sub>", "<html>min(e<sub>ir</sub>)</html>"});
         for (int i = 0; i < table1.getRowCount(); i++) {
+            table1.setValueAt(F[i][0], i, 0);
+            table1.setValueAt(F[i][1], i, 1);
+            table1.setValueAt(F[i][2], i, 2);
             table1.setValueAt(mins[i], i, 3);
             table1.setValueAt(e[i], i, 4);
-            if (max == e[i]) {
+            if (Float.compare(max, e[i]) == 0) {
+                markers[i] = true;
                 table1.setValueAt(e[i], i, 5);
             }
         }
+        return markers;
     }
 
-    private void germeierCriteria() {
+    private boolean[] germeierCriteria() {
+        boolean[] markers = new boolean[F.length];
+        Arrays.fill(markers, false);
         float[] possibilities = getPossibilities();
         if (possibilities == null) {
-            return;
+            return null;
         }
         int a = Integer.MIN_VALUE;
         for (int i = 0; i < F.length; i++) {
@@ -350,6 +399,9 @@ public class CriteriasView extends JFrame implements FormInferface {
                 "<html>min(e<sub>ij</sub>)",
                 "<html>max(e<sub>ir</sub>)</html>"});
         for (int i = 0; i < table1.getRowCount(); i++) {
+            table1.setValueAt(F[i][0], i, 0);
+            table1.setValueAt(F[i][1], i, 1);
+            table1.setValueAt(F[i][2], i, 2);
             table1.setValueAt(F2[i][0], i, 3);
             table1.setValueAt(F2[i][1], i, 4);
             table1.setValueAt(F2[i][2], i, 5);
@@ -357,17 +409,21 @@ public class CriteriasView extends JFrame implements FormInferface {
             table1.setValueAt(F3[i][1], i, 7);
             table1.setValueAt(F3[i][2], i, 8);
             table1.setValueAt(e[i], i, 9);
-            if (min == e[i]) {
+            if (Float.compare(min, e[i]) == 0) {
+                markers[i] = true;
                 table1.setValueAt(e[i], i, 10);
             }
         }
+        return markers;
     }
 
-    private void productCriteria() {
+    private boolean[] productCriteria() {
+        boolean[] markers = new boolean[F.length];
+        Arrays.fill(markers, false);
         int min = Integer.MAX_VALUE;
         for (int i = 0; i < F.length; i++) {
-            if (min > getMin(F[i])){
-                min = getMin(F[i]);
+            if (min > getMin(F[i])) {
+                min = getMin(F[i]) - 1;
             }
         }
         int[][] F1 = new int[F.length][F[0].length];
@@ -390,9 +446,46 @@ public class CriteriasView extends JFrame implements FormInferface {
         model.setColumnIdentifiers(new Object[]{"F1", "F2", "F3", "<html>П(e<sub>ij</sub>)",
                 "<html>max(e<sub>ir</sub>)</html>"});
         for (int i = 0; i < table1.getRowCount(); i++) {
+            table1.setValueAt(F[i][0], i, 0);
+            table1.setValueAt(F[i][1], i, 1);
+            table1.setValueAt(F[i][2], i, 2);
             table1.setValueAt(product[i], i, 3);
             if (max == product[i]) {
+                markers[i] = true;
                 table1.setValueAt(product[i], i, 4);
+            }
+        }
+        return markers;
+    }
+
+    private void allCriterias() {
+        boolean[] mm = minimaxCriteria();
+        boolean[] bl = bayesLaplaceCriteria();
+        boolean[] s = savageCriteria();
+        boolean[] hw = hurwitzCriteria();
+        boolean[] hl = hodgeLehmannCriteria();
+        boolean[] g = germeierCriteria();
+        boolean[] p = productCriteria();
+        boolean[][] allMarkers = new boolean[F.length][7];
+        for (int i = 0; i < allMarkers[0].length; i++) {
+            allMarkers[i][0] = mm[i];
+            allMarkers[i][1] = bl[i];
+            allMarkers[i][2] = s[i];
+            allMarkers[i][3] = hw[i];
+            allMarkers[i][4] = hl[i];
+            allMarkers[i][5] = g[i];
+            allMarkers[i][6] = p[i];
+        }
+        model.setColumnCount(8);
+        model.setColumnIdentifiers(new Object[]{"", "MM", "BL", "S", "HW", "HL", "G", "P"});
+        clearTableInterval(0, 7);
+        for (int i = 0; i < table1.getRowCount(); i++) {
+            for (int j = 0; j < table1.getColumnCount(); j++) {
+                if (j == 0) {
+                    table1.setValueAt("E" + (i + 1), i, j);
+                } else {
+                    table1.setValueAt(allMarkers[i][j - 1] ? "*" : "", i, j);
+                }
             }
         }
     }
